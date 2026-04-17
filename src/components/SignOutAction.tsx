@@ -5,10 +5,10 @@ import styles from "../app/admin/page.module.css";
 
 export default function SignOutAction() {
   return (
-    <button 
-      onClick={() => signOut({ callbackUrl: "/" })} 
+    <a 
+      href="/api/auth/signout" 
       className={styles.quickAction}
-      style={{ background: 'none', border: '1px solid var(--color-border-subtle)', width: '100%', textAlign: 'left', padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)' }}
+      style={{ background: 'none', border: '1px solid var(--color-border-subtle)', width: '100%', textAlign: 'left', padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)', textDecoration: 'none', display: 'flex' }}
     >
       <div className={styles.quickActionIcon} style={{ background: 'rgba(220, 38, 38, 0.1)', color: '#dc2626' }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -26,6 +26,6 @@ export default function SignOutAction() {
           <polyline points="9 18 15 12 9 6" />
         </svg>
       </div>
-    </button>
+    </a>
   );
 }

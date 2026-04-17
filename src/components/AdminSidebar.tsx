@@ -135,9 +135,9 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
               <span className={styles.userEmail}>{user.email}</span>
             </div>
           </div>
-          <button
+          <a
+            href="/api/auth/signout"
             className={styles.signOutBtn}
-            onClick={() => signOut({ callbackUrl: "/" })}
             title="Sign out"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -146,7 +146,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
             <span className={styles.signOutLabel}>Sign Out</span>
-          </button>
+          </a>
         </div>
       )}
     </aside>
