@@ -73,3 +73,4 @@ vite.config.ts.timestamp-*
 
 # extras
 client_secret*.json
+.env*.local

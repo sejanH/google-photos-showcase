@@ -12,32 +12,44 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const album = await prisma.album.findUnique({
-    where: { slug, isPublished: true },
-  });
+  try {
+    const { slug } = await params;
+    const album = await prisma.album.findUnique({
+      where: { slug, isPublished: true },
+    });
 
-  if (!album) return { title: "Album Not Found" };
+    if (!album) return { title: "Album Not Found" };
 
-  return {
-    title: album.title,
-    description: album.description || `View the "${album.title}" photo album`,
-    openGraph: {
+    return {
       title: album.title,
       description: album.description || `View the "${album.title}" photo album`,
-      ...(album.coverImage ? { images: [album.coverImage] } : {}),
-    },
-  };
+      openGraph: {
+        title: album.title,
+        description: album.description || `View the "${album.title}" photo album`,
+        ...(album.coverImage ? { images: [album.coverImage] } : {}),
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return { title: "Photo Album" };
+  }
 }
 
 export async function generateStaticParams() {
-  const albums = await prisma.album.findMany({
-    where: { isPublished: true },
-    select: { slug: true },
-  });
+  try {
+    const albums = await prisma.album.findMany({
+      where: { isPublished: true },
+      select: { slug: true },
+    });
 
-  return albums.map((album) => ({ slug: album.slug }));
+    return albums.map((album) => ({ slug: album.slug }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
 }
+
+export const dynamicParams = true;
 
 export default async function AlbumPage({ params }: PageProps) {
   const { slug } = await params;
