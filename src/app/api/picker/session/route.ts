@@ -31,7 +31,7 @@ export async function POST() {
   } catch (error) {
     console.error("Failed to create picker session:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to create picker session" },
+      { error: error instanceof Error ? error.message : "Failed to create picker session" },
       { status: 500 }
     );
   }
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("Failed to poll picker session:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to poll picker session" },
+      { error: error instanceof Error ? error.message : "Failed to poll picker session" },
       { status: 500 }
     );
   }
