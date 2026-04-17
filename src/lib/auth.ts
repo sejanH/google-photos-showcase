@@ -18,12 +18,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { userId: token.sub, provider: "google" },
         });
         if (account) {
-          (session as any).accessToken = account.access_token;
+          (session as { accessToken?: string | null }).accessToken = account.access_token;
         }
       }
       return session;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }

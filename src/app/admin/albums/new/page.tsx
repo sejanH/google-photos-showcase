@@ -37,8 +37,8 @@ export default function NewAlbumPage() {
 
       const result = await res.json();
       router.push(`/admin/albums/${result.data.id}/edit`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create album");
       setLoading(false);
     }
   }

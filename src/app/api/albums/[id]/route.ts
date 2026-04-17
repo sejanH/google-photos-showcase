@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { deleteAlbumCache } from "@/lib/image-cache";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -70,7 +69,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
     });
 
     return NextResponse.json({ success: true, data: album });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update album:", error);
     return NextResponse.json(
       { error: "Failed to update album" },
@@ -93,7 +92,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     await prisma.album.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete album:", error);
     return NextResponse.json(
       { error: "Failed to delete album" },

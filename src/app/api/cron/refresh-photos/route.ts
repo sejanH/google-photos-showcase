@@ -21,10 +21,10 @@ export async function GET(req: NextRequest) {
       refreshed: refreshedCount,
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Cron refresh failed:", error);
     return NextResponse.json(
-      { error: "Refresh failed", details: error.message },
+      { error: "Refresh failed", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

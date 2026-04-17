@@ -40,8 +40,8 @@ export default function EditAlbumPage() {
       if (!res.ok) throw new Error("Failed to fetch album");
       const result = await res.json();
       setAlbum(result.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch album");
     } finally {
       setLoading(false);
     }
@@ -80,8 +80,8 @@ export default function EditAlbumPage() {
       setSuccess("Album saved successfully!");
       fetchAlbum();
       setTimeout(() => setSuccess(""), 3000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch album");
     } finally {
       setSaving(false);
     }
@@ -152,10 +152,10 @@ export default function EditAlbumPage() {
               pickerWindow.close();
             }
           }
-        } catch (err: any) {
+        } catch (err) {
           clearInterval(pollInterval);
           setPolling(false);
-          setError(err.message);
+          setError(err instanceof Error ? err.message : "Polling failed");
         }
       }, 2000);
 
@@ -171,8 +171,8 @@ export default function EditAlbumPage() {
           }, 5000);
         }
       }, 1000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch album");
     } finally {
       setPicking(false);
     }
@@ -188,8 +188,8 @@ export default function EditAlbumPage() {
 
       if (!res.ok) throw new Error("Failed to delete photo");
       fetchAlbum();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch album");
     }
   }
 
@@ -206,8 +206,8 @@ export default function EditAlbumPage() {
       setSuccess("Cover image updated!");
       fetchAlbum();
       setTimeout(() => setSuccess(""), 3000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch album");
     }
   }
 
@@ -226,8 +226,8 @@ export default function EditAlbumPage() {
 
       if (!res.ok) throw new Error("Failed to delete album");
       router.push("/admin/albums");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch album");
     }
   }
 

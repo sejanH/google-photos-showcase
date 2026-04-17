@@ -62,8 +62,8 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error("Failed to save settings");
       setSuccess("Settings saved successfully!");
       setTimeout(() => setSuccess(""), 3000);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save settings");
     } finally {
       setSaving(false);
     }

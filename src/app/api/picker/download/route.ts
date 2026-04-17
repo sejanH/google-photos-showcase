@@ -5,7 +5,20 @@ import {
   listPickedMediaItems,
   deletePickerSession,
 } from "@/lib/google-picker";
-import { downloadAndCacheImage } from "@/lib/image-cache";
+
+interface GoogleMediaItem {
+  id: string;
+  baseUrl?: string;
+  mimeType?: string;
+  mediaFile?: {
+    baseUrl?: string;
+    mimeType?: string;
+    mediaFileMetadata?: {
+      width?: number;
+      height?: number;
+    };
+  };
+}
 
 // POST /api/picker/download — Download selected photos from a completed session
 export async function POST(req: NextRequest) {
@@ -52,7 +65,7 @@ export async function POST(req: NextRequest) {
     const accessToken = account.access_token;
 
     // Fetch all media items (with pagination)
-    let allItems: any[] = [];
+    let allItems: GoogleMediaItem[] = [];
     let pageToken: string | undefined;
 
     do {
@@ -114,7 +127,7 @@ export async function POST(req: NextRequest) {
             data: { coverImage: `/api/media/${photo.id}?w=800&h=500&c=true` },
           });
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error(`Failed to process item ${item.id}:`, err);
         errors.push(`Failed to process: ${item.id}`);
       }
@@ -135,10 +148,10 @@ export async function POST(req: NextRequest) {
         errors: errors.length > 0 ? errors : undefined,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to download photos:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to download photos" },
+      { error: error instanceof Error ? error.message : "Failed to download photos" },
       { status: 500 }
     );
   }

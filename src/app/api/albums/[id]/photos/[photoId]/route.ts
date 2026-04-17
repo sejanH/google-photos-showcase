@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { deleteCachedImage } from "@/lib/image-cache";
 
 interface RouteContext {
   params: Promise<{ id: string; photoId: string }>;
@@ -38,7 +37,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete photo:", error);
     return NextResponse.json(
       { error: "Failed to delete photo" },

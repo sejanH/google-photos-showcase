@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: album }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to create album:", error);
     return NextResponse.json(
       { error: "Failed to create album" },

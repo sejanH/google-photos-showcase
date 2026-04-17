@@ -28,7 +28,7 @@ export async function POST() {
   try {
     const pickerSession = await createPickerSession(account.access_token);
     return NextResponse.json({ success: true, data: pickerSession });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to create picker session:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create picker session" },
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
       sessionId
     );
     return NextResponse.json({ success: true, data: pickerSession });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to poll picker session:", error);
     return NextResponse.json(
       { error: error.message || "Failed to poll picker session" },

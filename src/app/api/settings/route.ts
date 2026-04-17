@@ -52,7 +52,7 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: settings });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to save settings:", error);
     return NextResponse.json(
       { error: "Failed to save settings" },
