@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./page.module.css";
+import SignOutAction from "@/components/SignOutAction";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -250,6 +251,8 @@ export default async function AdminDashboard() {
                 </svg>
               </div>
             </Link>
+
+            <SignOutAction />
           </div>
         </div>
       </div>
