@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
 import { createPickerSession, getPickerSession } from "@/lib/google-picker";
+import { getAdminAccessToken } from "@/lib/media-service";
 
 // POST /api/picker/session — Create a new Picker session
 export async function POST() {
@@ -10,23 +10,10 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Get the user's access token
-  const account = await prisma.account.findFirst({
-    where: {
-      userId: session.user?.id,
-      provider: "google",
-    },
-  });
-
-  if (!account?.access_token) {
-    return NextResponse.json(
-      { error: "No Google access token found. Please sign in again." },
-      { status: 401 }
-    );
-  }
-
   try {
-    const pickerSession = await createPickerSession(account.access_token);
+    // Get a fresh access token (handles refresh automatically)
+    const accessToken = await getAdminAccessToken();
+    const pickerSession = await createPickerSession(accessToken);
     return NextResponse.json({ success: true, data: pickerSession });
   } catch (error) {
     console.error("Failed to create picker session:", error);
@@ -52,25 +39,9 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const account = await prisma.account.findFirst({
-    where: {
-      userId: session.user?.id,
-      provider: "google",
-    },
-  });
-
-  if (!account?.access_token) {
-    return NextResponse.json(
-      { error: "No Google access token found" },
-      { status: 401 }
-    );
-  }
-
   try {
-    const pickerSession = await getPickerSession(
-      account.access_token,
-      sessionId
-    );
+    const accessToken = await getAdminAccessToken();
+    const pickerSession = await getPickerSession(accessToken, sessionId);
     return NextResponse.json({ success: true, data: pickerSession });
   } catch (error) {
     console.error("Failed to poll picker session:", error);

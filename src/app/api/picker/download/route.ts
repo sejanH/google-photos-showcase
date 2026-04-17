@@ -5,6 +5,7 @@ import {
   listPickedMediaItems,
   deletePickerSession,
 } from "@/lib/google-picker";
+import { getAdminAccessToken } from "@/lib/media-service";
 
 interface GoogleMediaItem {
   id: string;
@@ -47,22 +48,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user's access token
-    const account = await prisma.account.findFirst({
-      where: {
-        userId: session.user?.id,
-        provider: "google",
-      },
-    });
 
-    if (!account?.access_token) {
-      return NextResponse.json(
-        { error: "No Google access token found" },
-        { status: 401 }
-      );
-    }
-
-    const accessToken = account.access_token;
+    // Get a fresh access token
+    const accessToken = await getAdminAccessToken();
 
     // Fetch all media items (with pagination)
     let allItems: GoogleMediaItem[] = [];
