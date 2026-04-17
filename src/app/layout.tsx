@@ -15,6 +15,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
   title: {
     default: "Photo Showcase — A Curated Collection of Moments",
     template: "%s | Photo Showcase",

@@ -59,8 +59,24 @@ export default async function AlbumPage({ params }: PageProps) {
 
   const siteName = settings?.siteName || "Photo Showcase";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    "name": album.title,
+    "description": album.description,
+    "image": album.photos.slice(0, 5).map(p => `/api/media/${p.id}?w=1200`),
+    "author": {
+      "@type": "Person",
+      "name": settings?.ownerName || siteName
+    }
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar siteName={siteName} />
 
       <main className={styles.main}>
