@@ -4,6 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { handleLogout } from "@/lib/actions";
 import styles from "./AdminSidebar.module.css";
 
 interface AdminSidebarProps {
@@ -134,18 +135,20 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
               <span className={styles.userEmail}>{user.email}</span>
             </div>
           </div>
-          <a
-            href="/api/auth/signout"
-            className={styles.signOutBtn}
-            title="Sign out"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            <span className={styles.signOutLabel}>Sign Out</span>
-          </a>
+          <form action={handleLogout} className={styles.signOutForm}>
+            <button
+              type="submit"
+              className={styles.signOutBtn}
+              title="Sign out"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span className={styles.signOutLabel}>Sign Out</span>
+            </button>
+          </form>
         </div>
       )}
     </aside>
