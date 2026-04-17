@@ -1,0 +1,3 @@
+# This directory stores photos downloaded from Google Photos.
+# It is tracked in git so the folder exists on deployment.
+# Individual photo files are NOT tracked (see .gitignore).

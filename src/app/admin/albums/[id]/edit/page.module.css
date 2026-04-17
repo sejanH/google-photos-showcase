@@ -1,0 +1,260 @@
+.page {
+  max-width: 800px;
+  animation: fadeInUp 400ms ease both;
+}
+
+.header {
+  margin-bottom: var(--space-8);
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.backBtn:hover {
+  color: var(--color-accent);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+/* ─── Banners ────────────────────────────────────────────── */
+
+.errorBanner {
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-danger-subtle);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+
+.successBanner {
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-success-subtle);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+
+/* ─── Sections ───────────────────────────────────────────── */
+
+.section {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+.sectionTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-6);
+}
+
+/* ─── Toggle ─────────────────────────────────────────────── */
+
+.toggleField {
+  margin-bottom: var(--space-6);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.toggleInput {
+  display: none;
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.toggleSwitch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.toggleInput:checked + .toggleSwitch {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.toggleInput:checked + .toggleSwitch::after {
+  left: 22px;
+  background: white;
+}
+
+.toggleLabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.toggleHint {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+  margin-left: calc(44px + var(--space-3));
+}
+
+/* ─── Form Actions ───────────────────────────────────────── */
+
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ─── Photos ─────────────────────────────────────────────── */
+
+.photosHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.photosHeader .sectionTitle {
+  margin-bottom: 0;
+}
+
+.photosEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-12) 0;
+  color: var(--color-text-muted);
+}
+
+.photosEmpty svg {
+  margin-bottom: var(--space-4);
+  opacity: 0.4;
+}
+
+.photosEmpty p {
+  font-size: var(--text-sm);
+}
+
+.photosGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.photoCard {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.photoImage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.photoImg {
+  object-fit: cover;
+}
+
+.photoActions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--color-surface);
+}
+
+.coverBadge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: 2px 8px;
+  background: var(--color-accent);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Spinner ────────────────────────────────────────────── */
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Loading ────────────────────────────────────────────── */
+
+.loading {
+  padding: var(--space-10);
+}
+
+.error {
+  padding: var(--space-10);
+  text-align: center;
+  color: var(--color-danger);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .photosGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+    gap: var(--space-3);
+  }
+}

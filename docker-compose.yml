@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      # Persist uploaded photos and database outside the container
+      - photos_data:/app/public/photos
+      - db_data:/app/prisma
+    restart: unless-stopped
+
+volumes:
+  photos_data:
+  db_data:

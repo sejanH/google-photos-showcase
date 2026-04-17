@@ -1,0 +1,40 @@
+{
+  "name": "google-photos-showcase",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A beautiful, open-source website to showcase your Google Photos albums",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "next": "^15.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "next-auth": "^5.0.0-beta.25",
+    "@auth/prisma-adapter": "^2.7.4",
+    "@prisma/client": "^6.6.0",
+    "zod": "^3.24.2",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.3",
+    "prisma": "^6.6.0",
+    "tsx": "^4.19.3",
+    "eslint": "^9.25.0",
+    "eslint-config-next": "^15.3.1",
+    "@eslint/eslintrc": "^3.3.1"
+  }
+}
