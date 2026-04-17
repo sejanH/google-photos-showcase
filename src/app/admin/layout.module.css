@@ -1,22 +1,23 @@
 .layout {
   display: flex;
   min-height: 100vh;
+  background: var(--color-bg);
 }
 
 .content {
   flex: 1;
   margin-left: var(--sidebar-width);
-  padding: var(--space-8);
   min-height: 100vh;
+  background: var(--color-bg);
+  overflow-x: hidden;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .layout {
     flex-direction: column;
   }
 
   .content {
     margin-left: 0;
-    padding: var(--space-4);
   }
 }

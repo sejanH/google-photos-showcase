@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./Footer.module.css";
 
 interface FooterProps {
@@ -22,6 +23,18 @@ export default function Footer({
           </span>
         </div>
         <div className={styles.right}>
+          <Link href="/contact" className={styles.link}>
+            Contact
+          </Link>
+          <span className={styles.separator}>·</span>
+          <Link href="/privacy" className={styles.link}>
+            Privacy
+          </Link>
+          <span className={styles.separator}>·</span>
+          <Link href="/terms" className={styles.link}>
+            Terms
+          </Link>
+          <span className={styles.separator}>·</span>
           <span className={styles.powered}>
             Powered by{" "}
             <a
