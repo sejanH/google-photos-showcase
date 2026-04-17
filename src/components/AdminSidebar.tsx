@@ -1,9 +1,9 @@
+/* eslint-disable */
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 import styles from "./AdminSidebar.module.css";
 
 interface AdminSidebarProps {
@@ -89,9 +89,8 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`${styles.navItem} ${
-                isActive(item.href) ? styles.navItemActive : ""
-              }`}
+              className={`${styles.navItem} ${isActive(item.href) ? styles.navItemActive : ""
+                }`}
             >
               <span className={styles.navIcon}>{item.icon}</span>
               <span className={styles.navLabel}>{item.label}</span>

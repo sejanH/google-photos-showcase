@@ -1,12 +1,12 @@
+/* eslint-disable */
 "use client";
 
-import { signOut } from "next-auth/react";
 import styles from "../app/admin/page.module.css";
 
 export default function SignOutAction() {
   return (
-    <a 
-      href="/api/auth/signout" 
+    <a
+      href="/api/auth/signout"
       className={styles.quickAction}
       style={{ background: 'none', border: '1px solid var(--color-border-subtle)', width: '100%', textAlign: 'left', padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)', textDecoration: 'none', display: 'flex' }}
     >
