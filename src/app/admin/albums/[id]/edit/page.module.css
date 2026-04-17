@@ -221,8 +221,8 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 2px solid rgba(196, 145, 58, 0.3);
+  border-top-color: var(--color-accent);
   border-radius: 50%;
   animation: spin 600ms linear infinite;
 }

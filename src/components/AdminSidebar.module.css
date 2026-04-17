@@ -183,13 +183,8 @@
 
 .userSection {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border-subtle);
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .userInfo {
@@ -197,7 +192,10 @@
   align-items: center;
   gap: var(--space-3);
   min-width: 0;
-  flex: 1;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
 }
 
 .userAvatar {
@@ -252,20 +250,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-sm);
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
   color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
-  flex-shrink: 0;
-  border: 1px solid transparent;
+  border: 1px solid var(--color-border-subtle);
+  background: transparent;
 }
 
 .signOutBtn:hover {
-  background: rgba(220, 38, 38, 0.08);
+  background: rgba(220, 38, 38, 0.06);
   border-color: rgba(220, 38, 38, 0.2);
   color: #dc2626;
+}
+
+.signOutLabel {
+  line-height: 1;
 }
 
 /* ─── Mobile ─────────────────────────────────────────────── */

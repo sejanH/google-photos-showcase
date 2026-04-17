@@ -145,6 +145,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
+            <span className={styles.signOutLabel}>Sign Out</span>
           </button>
         </div>
       )}

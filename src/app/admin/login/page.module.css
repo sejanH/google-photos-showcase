@@ -19,7 +19,7 @@
   height: 800px;
   background: radial-gradient(
     circle,
-    rgba(99, 102, 241, 0.08) 0%,
+    rgba(196, 145, 58, 0.06) 0%,
     transparent 60%
   );
   pointer-events: none;
@@ -35,6 +35,7 @@
   padding: var(--space-10);
   text-align: center;
   animation: scaleIn 400ms ease both;
+  box-shadow: var(--shadow-lg);
 }
 
 .iconWrapper {
@@ -72,7 +73,7 @@
 .error {
   padding: var(--space-3) var(--space-4);
   background: var(--color-danger-subtle);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.2);
   border-radius: var(--radius-md);
   color: var(--color-danger);
   font-size: var(--text-sm);
