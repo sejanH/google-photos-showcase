@@ -3,6 +3,8 @@ import { SessionProvider } from "next-auth/react";
 import AdminSidebar from "@/components/AdminSidebar";
 import styles from "./layout.module.css";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: {
     default: "Admin Dashboard",
