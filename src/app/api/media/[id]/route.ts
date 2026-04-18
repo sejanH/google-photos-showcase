@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getAdminAccessToken, refreshBaseUrls } from "@/lib/media-service";
+import { getAdminAccessToken } from "@/lib/media-service";
+import fs from "fs";
+import path from "path";
+import sharp from "sharp";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -30,34 +33,42 @@ export async function GET(req: NextRequest, context: RouteContext) {
     let photo = await prisma.photo.findUnique({ where: { id } });
     if (!photo) return new NextResponse("Not Found", { status: 404 });
 
-    // 2. Check if baseUrl is expired or about to expire
-    const now = new Date();
-    if (photo.baseUrlExpiresAt <= now) {
-      try {
-        await refreshBaseUrls([id]);
-      } catch (error) {
-        if (GOOGLE_ONLY_MODE) {
-          console.warn("On-demand refresh failed in GOOGLE_ONLY_MODE:", error);
-          return expiredImageResponse();
-        }
-        throw error;
+    // 2. Check if local cached file exists
+    if (photo.storagePath && fs.existsSync(photo.storagePath)) {
+      let imageBuffer = fs.readFileSync(photo.storagePath);
+
+      // Apply resizing if requested
+      if (w || h) {
+        const width = w ? parseInt(w) : undefined;
+        const height = h ? parseInt(h) : undefined;
+        imageBuffer = await sharp(imageBuffer)
+          .resize(width, height, { fit: crop ? "cover" : "inside" })
+          .toBuffer();
       }
-      photo = await prisma.photo.findUnique({ where: { id } });
-      if (!photo) return new NextResponse("Refresh Failed", { status: 500 });
+
+      return new NextResponse(imageBuffer, {
+        headers: {
+          "Content-Type": photo.mimeType || "image/jpeg",
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
     }
 
-    // 3. Get admin token
+    // 3. Fallback: Check if baseUrl is expired or about to expire
+    const now = new Date();
+    if (photo.baseUrlExpiresAt <= now) {
+      return expiredImageResponse();
+    }
+
+    // 4. Get admin token
     let token: string;
     try {
       token = await getAdminAccessToken();
     } catch (error) {
-      if (GOOGLE_ONLY_MODE) {
-        return expiredImageResponse();
-      }
-      throw error;
+      return expiredImageResponse();
     }
 
-    // 4. Fetch from Google
+    // 5. Fetch from Google
     const googleUrl = `${photo.baseUrl}${params}`;
     const res = await fetch(googleUrl, {
       headers: {
@@ -66,41 +77,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     });
 
     if (!res.ok) {
-      // Try on-demand refresh once for this specific photo
-      if (res.status === 401 || res.status === 403 || res.status === 404) {
-        try {
-          await refreshBaseUrls([id]);
-          const updatedPhoto = await prisma.photo.findUnique({ where: { id } });
-          if (updatedPhoto) {
-            const retryToken = await getAdminAccessToken();
-            const retryRes = await fetch(`${updatedPhoto.baseUrl}${params}`, {
-              headers: { Authorization: `Bearer ${retryToken}` },
-            });
-            if (retryRes.ok) return pipeResponse(retryRes);
-          }
-        } catch (error) {
-          if (GOOGLE_ONLY_MODE) {
-            console.warn("Retry refresh failed in GOOGLE_ONLY_MODE:", error);
-            return expiredImageResponse();
-          }
-        }
-      }
-
-      if (GOOGLE_ONLY_MODE && (res.status === 401 || res.status === 403 || res.status === 404)) {
-        return expiredImageResponse();
-      }
-      // If it failed with 403, try one more refresh
-      if (res.status === 403) {
-        await refreshBaseUrls([id]);
-        const updatedPhoto = await prisma.photo.findUnique({ where: { id } });
-        if (updatedPhoto) {
-          const retryRes = await fetch(`${updatedPhoto.baseUrl}${params}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (retryRes.ok) return pipeResponse(retryRes);
-        }
-      }
-      return new NextResponse("Google API Error", { status: res.status });
+      return expiredImageResponse();
     }
 
     return pipeResponse(res);

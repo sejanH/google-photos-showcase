@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -80,6 +80,7 @@ model Photo {
   width            Int?
   height           Int?
   mimeType         String?
+  storagePath      String?  // Local path to cached file
   caption          String?
   sortOrder        Int      @default(0)
   createdAt        DateTime @default(now())

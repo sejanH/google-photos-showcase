@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Save to database (NO DOWNLOAD)
+        // Save to database
         const photo = await prisma.photo.create({
           data: {
             googleMediaId: item.id,
@@ -131,6 +131,15 @@ export async function POST(req: NextRequest) {
             albumId,
           },
         });
+
+        // Trigger background download
+        try {
+          // We can await it here or fire-and-forget, but for a showcase, 
+          // awaiting ensures they are ready before the user sees the dashboard.
+          await import("@/lib/media-service").then(m => m.downloadAndCachePhoto(photo.id));
+        } catch (downloadErr) {
+          console.error(`Failed to download ${photo.id} to local storage:`, downloadErr);
+        }
 
         processedCount++;
 

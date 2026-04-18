@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { refreshBaseUrls } from "@/lib/media-service";
 
 /**
- * Cron endpoint to refresh all photo baseUrls.
- * Should be called every 50-55 minutes.
+ * Cron endpoint to download missing photo files.
+ * Will find any photos that haven't been cached locally yet
+ * and download them if their temporary Google URL is still valid.
  */
 export async function GET(req: NextRequest) {
   const googleOnlyMode = process.env.GOOGLE_ONLY_MODE === "true";
@@ -34,28 +35,10 @@ export async function GET(req: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Cron refresh failed:", error);
+    console.error("Download sync failed:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
-    const needsReauth =
-      message.includes("scope is missing") ||
-      message.includes("re-authenticate") ||
-      message.includes("invalid_grant") ||
-      message.includes("revoked");
-
-    if (needsReauth) {
-      return NextResponse.json(
-        {
-          error: "Session expired",
-          requiresReauth: true,
-          message: "Google authorization needs to be refreshed. Please sign in again.",
-          details: message,
-        },
-        { status: 401 }
-      );
-    }
-
     return NextResponse.json(
-      { error: "Refresh failed", details: message },
+      { error: "Download sync failed", details: message },
       { status: 500 }
     );
   }
