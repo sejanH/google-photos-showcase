@@ -11,8 +11,9 @@ export async function POST() {
   }
 
   try {
+    const userId = (session.user as { id?: string | null } | undefined)?.id;
     // Get a fresh access token (handles refresh automatically)
-    const accessToken = await getAdminAccessToken();
+    const accessToken = await getAdminAccessToken(userId ?? undefined);
     const pickerSession = await createPickerSession(accessToken);
     return NextResponse.json({ success: true, data: pickerSession });
   } catch (error) {
@@ -61,7 +62,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const accessToken = await getAdminAccessToken();
+    const userId = (session.user as { id?: string | null } | undefined)?.id;
+    const accessToken = await getAdminAccessToken(userId ?? undefined);
     const pickerSession = await getPickerSession(accessToken, sessionId);
     return NextResponse.json({ success: true, data: pickerSession });
   } catch (error) {

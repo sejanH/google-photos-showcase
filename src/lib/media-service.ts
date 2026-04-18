@@ -8,7 +8,7 @@ export async function refreshBaseUrls(photoIds?: string[]) {
   // Get the admin account to use for refreshing
   // We assume the first account with provider 'google' is the admin
   const account = await prisma.account.findFirst({
-    where: { provider: "google" },
+    where: { provider: "google", refresh_token: { not: null } },
   });
 
   if (!account) {
@@ -87,20 +87,38 @@ export async function refreshBaseUrls(photoIds?: string[]) {
 /**
  * Get a fresh access token for the admin.
  */
-export async function getAdminAccessToken() {
-  const account = await prisma.account.findFirst({
-    where: { provider: "google" },
-  });
+export async function getAdminAccessToken(userId?: string) {
+  return getGoogleAccessToken(userId);
+}
+
+/**
+ * Get a fresh access token for a specific Google-authenticated user.
+ * Falls back to current access token if still valid, otherwise refreshes.
+ */
+export async function getGoogleAccessToken(userId?: string) {
+  const account = userId
+    ? await prisma.account.findFirst({
+        where: { userId, provider: "google" },
+      })
+    : await prisma.account.findFirst({
+        where: { provider: "google", refresh_token: { not: null } },
+      });
 
   if (!account) {
     throw new Error("No Google account found. Please log in with Google first.");
   }
 
+  const now = Math.floor(Date.now() / 1000);
+  const hasValidAccessToken =
+    Boolean(account.access_token) &&
+    (!account.expires_at || account.expires_at > now + 60);
+
+  if (hasValidAccessToken && account.access_token) {
+    return account.access_token;
+  }
+
   if (!account.refresh_token) {
-    throw new Error(
-      "No refresh token found. This usually means you logged in before offline access was enabled. " +
-      "Please log out and log in again to get a refresh token."
-    );
+    throw new Error("No refresh token available for this Google account. Please sign in again.");
   }
 
   const res = await fetch("https://oauth2.googleapis.com/token", {
@@ -121,5 +139,24 @@ export async function getAdminAccessToken() {
   }
 
   const data = await res.json();
-  return data.access_token as string;
+  const accessToken = data.access_token as string | undefined;
+
+  if (!accessToken) {
+    throw new Error("Google token response did not include access_token.");
+  }
+
+  const nextExpiresAt =
+    typeof data.expires_in === "number" ? Math.floor(Date.now() / 1000) + data.expires_in : null;
+  const nextRefreshToken = typeof data.refresh_token === "string" ? data.refresh_token : null;
+
+  await prisma.account.update({
+    where: { id: account.id },
+    data: {
+      access_token: accessToken,
+      expires_at: nextExpiresAt ?? account.expires_at,
+      refresh_token: nextRefreshToken ?? account.refresh_token,
+    },
+  });
+
+  return accessToken;
 }

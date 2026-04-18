@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const userId = (session.user as { id?: string | null } | undefined)?.id;
     const body = await req.json();
     const { sessionId, albumId } = body;
 
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
     // Get a fresh access token
     let accessToken: string;
     try {
-      accessToken = await getAdminAccessToken();
+      accessToken = await getAdminAccessToken(userId ?? undefined);
     } catch (tokenError) {
       console.error("Failed to get access token:", tokenError);
       const errorMessage = tokenError instanceof Error ? tokenError.message : String(tokenError);
