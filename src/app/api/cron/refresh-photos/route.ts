@@ -6,12 +6,24 @@ import { refreshBaseUrls } from "@/lib/media-service";
  * Should be called every 50-55 minutes.
  */
 export async function GET(req: NextRequest) {
+  const googleOnlyMode = process.env.GOOGLE_ONLY_MODE === "true";
   const authHeader = req.headers.get("Authorization");
   const cronSecret = process.env.CRON_SECRET;
 
   // Simple protection: check if Bearer token matches CRON_SECRET
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (googleOnlyMode) {
+    return NextResponse.json({
+      success: true,
+      skipped: true,
+      mode: "google-only",
+      message:
+        "Cron refresh is disabled in GOOGLE_ONLY_MODE. Re-authenticate and re-pick photos when URLs expire.",
+      timestamp: new Date().toISOString(),
+    });
   }
 
   try {

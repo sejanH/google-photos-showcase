@@ -13,7 +13,7 @@ export const authConfig: NextAuthConfig = {
       authorization: {
         params: {
           scope:
-            "openid email profile https://www.googleapis.com/auth/photospicker.mediaitems.readonly https://www.googleapis.com/auth/photoslibrary.readonly",
+            "openid email profile https://www.googleapis.com/auth/photospicker.mediaitems.readonly https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata",
           access_type: "offline",
           prompt: "consent",
         },
