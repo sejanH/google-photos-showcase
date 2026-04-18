@@ -50,7 +50,31 @@ export async function POST(req: NextRequest) {
 
 
     // Get a fresh access token
-    const accessToken = await getAdminAccessToken();
+    let accessToken: string;
+    try {
+      accessToken = await getAdminAccessToken();
+    } catch (tokenError) {
+      console.error("Failed to get access token:", tokenError);
+      const errorMessage = tokenError instanceof Error ? tokenError.message : String(tokenError);
+      const isTokenError =
+        errorMessage.includes("expired") ||
+        errorMessage.includes("revoked") ||
+        errorMessage.includes("invalid_grant") ||
+        errorMessage.includes("Failed to refresh access token");
+
+      if (isTokenError) {
+        return NextResponse.json(
+          {
+            error: "Session expired",
+            requiresReauth: true,
+            message: "Your Google session has expired. Please sign in again.",
+          },
+          { status: 401 }
+        );
+      }
+
+      throw tokenError;
+    }
 
     // Fetch all media items (with pagination)
     let allItems: GoogleMediaItem[] = [];

@@ -99,6 +99,16 @@ export default function EditAlbumPage() {
 
       if (!sessionRes.ok) {
         const result = await sessionRes.json();
+
+        // Check if re-authentication is required
+        if (result.requiresReauth) {
+          setError(result.message || "Session expired. Redirecting to login...");
+          setTimeout(() => {
+            router.push("/admin/login");
+          }, 1500);
+          return;
+        }
+
         throw new Error(result.error || "Failed to create picker session");
       }
 
@@ -120,6 +130,20 @@ export default function EditAlbumPage() {
           );
           const pollResult = await pollRes.json();
 
+          // Check if re-authentication is required
+          if (pollResult.requiresReauth) {
+            clearInterval(pollInterval);
+            setPolling(false);
+            if (pickerWindow && !pickerWindow.closed) {
+              pickerWindow.close();
+            }
+            setError(pollResult.message || "Session expired. Redirecting to login...");
+            setTimeout(() => {
+              router.push("/admin/login");
+            }, 1500);
+            return;
+          }
+
           if (pollResult.data?.mediaItemsSet) {
             clearInterval(pollInterval);
             setPolling(false);
@@ -136,6 +160,21 @@ export default function EditAlbumPage() {
 
             if (!downloadRes.ok) {
               const downloadResult = await downloadRes.json();
+
+              // Check if re-authentication is required
+              if (downloadResult.requiresReauth) {
+                clearInterval(pollInterval);
+                setPolling(false);
+                if (pickerWindow && !pickerWindow.closed) {
+                  pickerWindow.close();
+                }
+                setError(downloadResult.message || "Session expired. Redirecting to login...");
+                setTimeout(() => {
+                  router.push("/admin/login");
+                }, 1500);
+                return;
+              }
+
               throw new Error(
                 downloadResult.error || "Failed to download photos"
               );

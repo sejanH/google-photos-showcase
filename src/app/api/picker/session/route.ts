@@ -17,6 +17,27 @@ export async function POST() {
     return NextResponse.json({ success: true, data: pickerSession });
   } catch (error) {
     console.error("Failed to create picker session:", error);
+
+    // Check if the error is due to expired/revoked refresh token
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isTokenError =
+      errorMessage.includes("expired") ||
+      errorMessage.includes("revoked") ||
+      errorMessage.includes("invalid_grant") ||
+      errorMessage.includes("Failed to refresh access token");
+
+    if (isTokenError) {
+      // Return a special response indicating re-authentication is needed
+      return NextResponse.json(
+        {
+          error: "Session expired",
+          requiresReauth: true,
+          message: "Your Google session has expired. Please sign in again.",
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create picker session" },
       { status: 500 }
@@ -45,6 +66,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, data: pickerSession });
   } catch (error) {
     console.error("Failed to poll picker session:", error);
+
+    // Check if the error is due to expired/revoked refresh token
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isTokenError =
+      errorMessage.includes("expired") ||
+      errorMessage.includes("revoked") ||
+      errorMessage.includes("invalid_grant") ||
+      errorMessage.includes("Failed to refresh access token");
+
+    if (isTokenError) {
+      return NextResponse.json(
+        {
+          error: "Session expired",
+          requiresReauth: true,
+          message: "Your Google session has expired. Please sign in again.",
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to poll picker session" },
       { status: 500 }
