@@ -6,6 +6,7 @@ import { authConfig } from "@/auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" }, // Use JWT to keep it simple and edge-friendly if needed
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   ...authConfig,
   callbacks: {
     ...authConfig.callbacks,
