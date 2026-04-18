@@ -11,8 +11,15 @@ export async function refreshBaseUrls(photoIds?: string[]) {
     where: { provider: "google" },
   });
 
-  if (!account || !account.refresh_token) {
-    throw new Error("No admin refresh token found");
+  if (!account) {
+    throw new Error("No Google account found. Please log in with Google first.");
+  }
+
+  if (!account.refresh_token) {
+    throw new Error(
+      "No refresh token found. This usually means you logged in before offline access was enabled. " +
+      "Please log out and log in again to get a refresh token."
+    );
   }
 
   // 1. Refresh the access token
@@ -28,7 +35,9 @@ export async function refreshBaseUrls(photoIds?: string[]) {
   });
 
   if (!tokenRes.ok) {
-    throw new Error(`Failed to refresh access token: ${tokenRes.status}`);
+    const errorText = await tokenRes.text();
+    console.error("Token refresh failed:", tokenRes.status, errorText);
+    throw new Error(`Failed to refresh access token: ${tokenRes.status} - ${errorText}`);
   }
 
   const { access_token } = await tokenRes.json();
@@ -83,8 +92,15 @@ export async function getAdminAccessToken() {
     where: { provider: "google" },
   });
 
-  if (!account || !account.refresh_token) {
-    throw new Error("No admin refresh token found");
+  if (!account) {
+    throw new Error("No Google account found. Please log in with Google first.");
+  }
+
+  if (!account.refresh_token) {
+    throw new Error(
+      "No refresh token found. This usually means you logged in before offline access was enabled. " +
+      "Please log out and log in again to get a refresh token."
+    );
   }
 
   const res = await fetch("https://oauth2.googleapis.com/token", {
@@ -98,7 +114,12 @@ export async function getAdminAccessToken() {
     }),
   });
 
-  if (!res.ok) throw new Error("Failed to refresh access token");
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Token refresh failed:", res.status, errorText);
+    throw new Error(`Failed to refresh access token: ${res.status} - ${errorText}`);
+  }
+
   const data = await res.json();
   return data.access_token as string;
 }
