@@ -5,7 +5,7 @@ Google Photos Showcase is a production-ready, open-source gallery built for crea
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Prisma](https://img.shields.io/badge/Prisma-SQLite-green)
+![Prisma](https://img.shields.io/badge/Prisma-MySQL-green)
 
 ---
 
@@ -75,7 +75,7 @@ GOOGLE_CLIENT_SECRET=your-client-secret
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=run-openssl-rand-base64-32
 ADMIN_EMAIL=your-email@gmail.com
-DATABASE_URL="file:./prisma/dev.db"
+DATABASE_URL="mysql://photos_user:photos_pass@127.0.0.1:3306/photos_showcase"
 ```
 
 > Generate `NEXTAUTH_SECRET` with: `openssl rand -base64 32`
@@ -118,7 +118,8 @@ GOOGLE_CLIENT_SECRET=your-client-secret
 NEXTAUTH_URL=https://yourdomain.com
 NEXTAUTH_SECRET=your-secret
 ADMIN_EMAIL=your-email@gmail.com
-DATABASE_URL="file:./prisma/prod.db"
+DATABASE_URL="mysql://photos_user:photos_pass@db-host:3306/photos_showcase"
+CRON_SECRET=your-cron-secret
 ```
 
 Don't forget to add your production domain to the **Authorized redirect URIs** in Google Cloud:
@@ -169,7 +170,7 @@ src/
 | Framework | Next.js 15 (App Router) |
 | Language | TypeScript |
 | Auth | NextAuth.js v5 (Auth.js) |
-| Database | SQLite via Prisma |
+| Database | MySQL via Prisma |
 | Styling | Vanilla CSS (CSS Modules) |
 | Images | next/image with local caching |
 | Photos API | Google Photos Picker API |
