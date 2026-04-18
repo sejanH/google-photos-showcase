@@ -1,15 +1,37 @@
 import { prisma } from "./db";
 import { batchGetMediaItems } from "./google-picker";
 
+async function findPreferredGoogleAccount(userId?: string) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+
+  if (userId) {
+    return prisma.account.findFirst({
+      where: { userId, provider: "google" },
+    });
+  }
+
+  if (adminEmail) {
+    const adminAccount = await prisma.account.findFirst({
+      where: {
+        provider: "google",
+        refresh_token: { not: null },
+        user: { email: adminEmail },
+      },
+    });
+    if (adminAccount) return adminAccount;
+  }
+
+  return prisma.account.findFirst({
+    where: { provider: "google", refresh_token: { not: null } },
+  });
+}
+
 /**
  * Service to handle media item refreshing logic.
  */
 export async function refreshBaseUrls(photoIds?: string[]) {
   // Get the admin account to use for refreshing
-  // We assume the first account with provider 'google' is the admin
-  const account = await prisma.account.findFirst({
-    where: { provider: "google", refresh_token: { not: null } },
-  });
+  const account = await findPreferredGoogleAccount();
 
   if (!account) {
     throw new Error("No Google account found. Please log in with Google first.");
@@ -109,13 +131,7 @@ export async function getAdminAccessToken(userId?: string) {
  * Falls back to current access token if still valid, otherwise refreshes.
  */
 export async function getGoogleAccessToken(userId?: string) {
-  const account = userId
-    ? await prisma.account.findFirst({
-        where: { userId, provider: "google" },
-      })
-    : await prisma.account.findFirst({
-        where: { provider: "google", refresh_token: { not: null } },
-      });
+  const account = await findPreferredGoogleAccount(userId);
 
   if (!account) {
     throw new Error("No Google account found. Please log in with Google first.");
