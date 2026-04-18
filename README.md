@@ -1,6 +1,6 @@
 # 📸 Google Photos Showcase
 
-A beautiful, open-source photo gallery website that connects to your **Google Photos** library. Curate albums through the Google Photos Picker and display them in a stunning public gallery — no manual uploads, no duplicate storage.
+Google Photos Showcase is a production-ready, open-source gallery built for creators who want a clean public portfolio powered directly by Google Photos. It now includes a more resilient OAuth flow (with automatic re-auth handling), reliable token refresh behavior for Picker actions, and dynamic public pages so newly added photos appear immediately without manual cache purges.
 
 ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
@@ -12,9 +12,11 @@ A beautiful, open-source photo gallery website that connects to your **Google Ph
 ## ✨ Features
 
 - **Google Photos Picker Integration** — Select photos directly from your Google Photos library
+- **Resilient Google Auth Flow** — Improved session handling with re-auth prompts when tokens expire
 - **Zero Local Storage** — Images are served directly from Google via a secure proxy (no disk space used)
 - **Auto-Refreshing Links** — Built-in cron job and auto-refresh logic to handle Google's 60-minute expiry
 - **Beautiful Public Gallery** — Responsive album grid with lightbox viewer
+- **Live Public Updates** — Frontend pages render fresh data so newly published images appear right away
 - **Admin Dashboard** — Manage albums, photos, and site settings
 - **Dark Mode Design** — Premium dark theme with smooth animations
 - **SEO Optimized** — Dynamic meta tags, Open Graph, structured data
