@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import AlbumGrid from "@/components/AlbumGrid";
 import styles from "./page.module.css";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [albums, settings] = await Promise.all([
     prisma.album.findMany({
