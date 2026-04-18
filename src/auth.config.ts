@@ -7,6 +7,9 @@ export const authConfig: NextAuthConfig = {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Single-admin app: allow linking OAuth account to an existing user
+      // with the same verified email to prevent OAuthAccountNotLinked loops.
+      allowDangerousEmailAccountLinking: true,
       authorization: {
         params: {
           scope:
