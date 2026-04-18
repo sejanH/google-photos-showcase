@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
             error: "Session expired",
             requiresReauth: true,
             message: "Your Google session has expired. Please sign in again.",
+            reason: errorMessage.slice(0, 220),
           },
           { status: 401 }
         );
