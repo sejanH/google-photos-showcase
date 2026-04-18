@@ -3,7 +3,7 @@ import { batchGetMediaItems } from "./google-picker";
 
 async function findPreferredGoogleAccount(userId?: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
-  const requiredScope = "photoslibrary.readonly";
+  const requiredScope = "photospicker.mediaitems.readonly";
 
   if (userId) {
     const scopedAccount = await prisma.account.findFirst({
@@ -140,8 +140,8 @@ export async function refreshBaseUrls(photoIds?: string[]) {
       }
 
       throw new Error(
-        "Google Photos Library scope is missing for this account. " +
-        "Please re-authenticate to grant photoslibrary.readonly, then retry refresh."
+        "Google Photos Picker scope is missing for this account. " +
+        "Please re-authenticate to grant photospicker.mediaitems.readonly, then retry refresh."
       );
     }
   }

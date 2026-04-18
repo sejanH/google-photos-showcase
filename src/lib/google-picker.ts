@@ -10,7 +10,7 @@
  */
 
 const PICKER_BASE_URL = "https://photospicker.googleapis.com/v1";
-const PHOTOS_LIBRARY_BASE_URL = "https://photoslibrary.googleapis.com/v1";
+const PHOTOS_LIBRARY_BASE_URL = "https://photospicker.googleapis.com/v1";
 
 export interface PickerSession {
   id: string;
@@ -159,51 +159,14 @@ export async function batchGetMediaItems(
 ): Promise<{ mediaItems: PickedMediaItem[] }> {
   if (mediaItemIds.length === 0) return { mediaItems: [] };
 
-  const params = new URLSearchParams();
-  mediaItemIds.forEach((id) => params.append("mediaItemIds", id));
+  // Picker API does not support batchGet. We use parallel individual get requests.
+  const results = await Promise.allSettled(
+    mediaItemIds.map((id) => getMediaItem(accessToken, id))
+  );
 
-  const res = await fetch(`${PHOTOS_LIBRARY_BASE_URL}/mediaItems:batchGet?${params}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    const error = await res.text();
-    throw new Error(`Failed to batch get media items: ${res.status} ${error}`);
-  }
-
-  const data = await res.json() as {
-    mediaItemResults?: Array<{
-      mediaItem?: {
-        id: string;
-        baseUrl?: string;
-        mimeType?: string;
-        mediaMetadata?: {
-          width?: string;
-          height?: string;
-        };
-      };
-    }>;
-  };
-
-  const mediaItems: PickedMediaItem[] = (data.mediaItemResults ?? [])
-    .map((result) => result.mediaItem)
-    .filter((item): item is NonNullable<typeof item> => Boolean(item))
-    .map((item) => ({
-      id: item.id,
-      baseUrl: item.baseUrl ?? "",
-      mimeType: item.mimeType ?? "",
-      mediaFile: {
-        baseUrl: item.baseUrl ?? "",
-        mimeType: item.mimeType ?? "",
-        filename: item.id,
-        mediaFileMetadata: {
-          width: Number(item.mediaMetadata?.width ?? 0),
-          height: Number(item.mediaMetadata?.height ?? 0),
-        },
-      },
-    }));
+  const mediaItems: PickedMediaItem[] = results
+    .filter((res): res is PromiseFulfilledResult<PickedMediaItem> => res.status === "fulfilled")
+    .map((res) => res.value);
 
   return { mediaItems };
 }
