@@ -10,6 +10,7 @@
  */
 
 const PICKER_BASE_URL = "https://photospicker.googleapis.com/v1";
+const PHOTOS_LIBRARY_BASE_URL = "https://photoslibrary.googleapis.com/v1";
 
 export interface PickerSession {
   id: string;
@@ -148,9 +149,9 @@ export async function getMediaItem(
 }
 
 /**
- * Get multiple media items by their IDs in a single request.
- * Useful for bulk refreshing expired baseUrls.
- * Max 100 items per request.
+ * Get multiple media items by their IDs in a single request using the
+ * Photos Library API endpoint.
+ * Note: API limit is 50 ids per request.
  */
 export async function batchGetMediaItems(
   accessToken: string,
@@ -161,7 +162,7 @@ export async function batchGetMediaItems(
   const params = new URLSearchParams();
   mediaItemIds.forEach((id) => params.append("mediaItemIds", id));
 
-  const res = await fetch(`${PICKER_BASE_URL}/mediaItems:batchGet?${params}`, {
+  const res = await fetch(`${PHOTOS_LIBRARY_BASE_URL}/mediaItems:batchGet?${params}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -172,5 +173,37 @@ export async function batchGetMediaItems(
     throw new Error(`Failed to batch get media items: ${res.status} ${error}`);
   }
 
-  return res.json();
+  const data = await res.json() as {
+    mediaItemResults?: Array<{
+      mediaItem?: {
+        id: string;
+        baseUrl?: string;
+        mimeType?: string;
+        mediaMetadata?: {
+          width?: string;
+          height?: string;
+        };
+      };
+    }>;
+  };
+
+  const mediaItems: PickedMediaItem[] = (data.mediaItemResults ?? [])
+    .map((result) => result.mediaItem)
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .map((item) => ({
+      id: item.id,
+      baseUrl: item.baseUrl ?? "",
+      mimeType: item.mimeType ?? "",
+      mediaFile: {
+        baseUrl: item.baseUrl ?? "",
+        mimeType: item.mimeType ?? "",
+        filename: item.id,
+        mediaFileMetadata: {
+          width: Number(item.mediaMetadata?.width ?? 0),
+          height: Number(item.mediaMetadata?.height ?? 0),
+        },
+      },
+    }));
+
+  return { mediaItems };
 }

@@ -51,8 +51,8 @@ export async function refreshBaseUrls(photoIds?: string[]) {
 
   if (photos.length === 0) return 0;
 
-  // 3. Batch refresh in chunks of 100 (Google limit)
-  const CHUNK_SIZE = 100;
+  // 3. Batch refresh in chunks of 50 (Photos Library API limit)
+  const CHUNK_SIZE = 50;
   let refreshedCount = 0;
 
   for (let i = 0; i < photos.length; i += CHUNK_SIZE) {
