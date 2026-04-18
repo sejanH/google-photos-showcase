@@ -1,10 +1,9 @@
-/* eslint-disable */
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { handleLogout } from "@/lib/actions";
+import { signOut } from "next-auth/react";
 import styles from "./AdminSidebar.module.css";
 
 interface AdminSidebarProps {
@@ -62,6 +61,10 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "A";
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/" });
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -135,11 +138,12 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
               <span className={styles.userEmail}>{user.email}</span>
             </div>
           </div>
-          <form action={handleLogout} className={styles.signOutForm}>
+          <form className={styles.signOutForm}>
             <button
-              type="submit"
+              type="button"
               className={styles.signOutBtn}
               title="Sign out"
+              onClick={() => void handleLogout()}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
