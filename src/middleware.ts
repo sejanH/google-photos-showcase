@@ -7,11 +7,15 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   const isLoginPage = req.nextUrl.pathname === "/admin/login";
-  const isApiAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
   const forceReauth = req.nextUrl.searchParams.get("reauth") === "true";
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", req.nextUrl.pathname);
 
-  // Allow auth API routes to pass through
-  if (isApiAuthRoute) return NextResponse.next();
+  const nextResponse = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   // Admin routes require authentication
   if (isAdminRoute && !isLoginPage) {
@@ -28,9 +32,9 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
   }
 
-  return NextResponse.next();
+  return nextResponse;
 });
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/auth/:path*"],
+  matcher: ["/admin/:path*"],
 };
