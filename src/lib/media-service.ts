@@ -3,14 +3,35 @@ import { batchGetMediaItems } from "./google-picker";
 
 async function findPreferredGoogleAccount(userId?: string) {
   const adminEmail = process.env.ADMIN_EMAIL;
+  const requiredScope = "photoslibrary.readonly";
 
   if (userId) {
+    const scopedAccount = await prisma.account.findFirst({
+      where: {
+        userId,
+        provider: "google",
+        refresh_token: { not: null },
+        scope: { contains: requiredScope },
+      },
+    });
+    if (scopedAccount) return scopedAccount;
+
     return prisma.account.findFirst({
       where: { userId, provider: "google" },
     });
   }
 
   if (adminEmail) {
+    const adminScopedAccount = await prisma.account.findFirst({
+      where: {
+        provider: "google",
+        refresh_token: { not: null },
+        scope: { contains: requiredScope },
+        user: { email: adminEmail },
+      },
+    });
+    if (adminScopedAccount) return adminScopedAccount;
+
     const adminAccount = await prisma.account.findFirst({
       where: {
         provider: "google",
@@ -22,8 +43,17 @@ async function findPreferredGoogleAccount(userId?: string) {
   }
 
   return prisma.account.findFirst({
-    where: { provider: "google", refresh_token: { not: null } },
-  });
+    where: {
+      provider: "google",
+      refresh_token: { not: null },
+      scope: { contains: requiredScope },
+    },
+  }).then((scoped) =>
+    scoped ??
+    prisma.account.findFirst({
+      where: { provider: "google", refresh_token: { not: null } },
+    })
+  );
 }
 
 /**
