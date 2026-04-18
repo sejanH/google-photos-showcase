@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { batchGetMediaItems } from "./google-picker";
+import { batchGetMediaItems, getMediaItem } from "./google-picker";
 
 /**
  * Service to handle media item refreshing logic.
@@ -58,16 +58,15 @@ export async function refreshBaseUrls(photoIds?: string[]) {
   for (let i = 0; i < photos.length; i += CHUNK_SIZE) {
     const chunk = photos.slice(i, i + CHUNK_SIZE);
     const googleIds = chunk.map((p) => p.googleMediaId);
-
-    const { mediaItems } = await batchGetMediaItems(access_token, googleIds);
-
-    // 4. Update database
     const expiryDate = new Date(Date.now() + 55 * 60 * 1000); // 55 mins from now
 
-    await Promise.all(
-      mediaItems.map(async (item) => {
-        const baseUrl = item.mediaFile?.baseUrl || item.baseUrl;
-        if (baseUrl) {
+    try {
+      const { mediaItems } = await batchGetMediaItems(access_token, googleIds);
+
+      await Promise.all(
+        mediaItems.map(async (item) => {
+          const baseUrl = item.mediaFile?.baseUrl || item.baseUrl;
+          if (!baseUrl) return;
           await prisma.photo.update({
             where: { googleMediaId: item.id },
             data: {
@@ -76,9 +75,36 @@ export async function refreshBaseUrls(photoIds?: string[]) {
             },
           });
           refreshedCount++;
-        }
-      })
-    );
+        })
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const scopeInsufficient =
+        message.includes("ACCESS_TOKEN_SCOPE_INSUFFICIENT") ||
+        message.includes("insufficient authentication scopes");
+
+      if (!scopeInsufficient) {
+        throw error;
+      }
+
+      // Fallback: refresh one-by-one through Picker API when Photos Library scope
+      // has not yet been granted for existing refresh tokens.
+      await Promise.all(
+        googleIds.map(async (googleMediaId) => {
+          const item = await getMediaItem(access_token, googleMediaId);
+          const baseUrl = item.mediaFile?.baseUrl || item.baseUrl;
+          if (!baseUrl) return;
+          await prisma.photo.update({
+            where: { googleMediaId },
+            data: {
+              baseUrl,
+              baseUrlExpiresAt: expiryDate,
+            },
+          });
+          refreshedCount++;
+        })
+      );
+    }
   }
 
   return refreshedCount;
