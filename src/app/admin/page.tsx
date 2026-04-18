@@ -252,6 +252,24 @@ export default async function AdminDashboard() {
               </div>
             </Link>
 
+            <Link href="/admin/login?reauth=true" className={styles.quickAction}>
+              <div className={styles.quickActionIcon} data-color="warning">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18.36 6.64a9 9 0 11-12.73 0" />
+                  <line x1="12" y1="2" x2="12" y2="12" />
+                </svg>
+              </div>
+              <div className={styles.quickActionText}>
+                <span className={styles.quickActionTitle}>Re-authenticate</span>
+                <span className={styles.quickActionDesc}>Refresh Google session</span>
+              </div>
+              <div className={styles.quickActionArrow}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+            </Link>
+
             <SignOutAction />
           </div>
         </div>

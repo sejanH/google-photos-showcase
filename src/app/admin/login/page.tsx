@@ -9,6 +9,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const forceReauth = searchParams.get("reauth") === "true";
 
   return (
     <div className={styles.page}>
@@ -29,9 +30,13 @@ function LoginForm() {
           </svg>
         </div>
 
-        <h1 className={styles.title}>Admin Access</h1>
+        <h1 className={styles.title}>
+          {forceReauth ? "Re-authenticate" : "Admin Access"}
+        </h1>
         <p className={styles.subtitle}>
-          Sign in with your Google account to manage your photo showcase.
+          {forceReauth
+            ? "Your Google session has expired. Please sign in again to continue."
+            : "Sign in with your Google account to manage your photo showcase."}
         </p>
 
         {error && (
@@ -44,7 +49,16 @@ function LoginForm() {
 
         <button
           className={styles.googleBtn}
-          onClick={() => signIn("google", { callbackUrl })}
+          onClick={() =>
+            signIn("google", {
+              callbackUrl: forceReauth ? "/admin" : callbackUrl,
+              // Force consent to get a new refresh token
+              authorizationParams: {
+                prompt: "consent",
+                access_type: "offline",
+              },
+            })
+          }
         >
           <svg className={styles.googleIcon} viewBox="0 0 24 24">
             <path
@@ -64,7 +78,7 @@ function LoginForm() {
               fill="#EA4335"
             />
           </svg>
-          Continue with Google
+          {forceReauth ? "Sign In Again" : "Continue with Google"}
         </button>
 
         <p className={styles.hint}>

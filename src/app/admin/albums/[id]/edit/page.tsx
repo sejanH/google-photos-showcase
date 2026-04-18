@@ -104,7 +104,7 @@ export default function EditAlbumPage() {
         if (result.requiresReauth) {
           setError(result.message || "Session expired. Redirecting to login...");
           setTimeout(() => {
-            router.push("/admin/login");
+            router.push("/admin/login?reauth=true");
           }, 1500);
           return;
         }
@@ -139,7 +139,7 @@ export default function EditAlbumPage() {
             }
             setError(pollResult.message || "Session expired. Redirecting to login...");
             setTimeout(() => {
-              router.push("/admin/login");
+              router.push("/admin/login?reauth=true");
             }, 1500);
             return;
           }
@@ -170,7 +170,7 @@ export default function EditAlbumPage() {
                 }
                 setError(downloadResult.message || "Session expired. Redirecting to login...");
                 setTimeout(() => {
-                  router.push("/admin/login");
+                  router.push("/admin/login?reauth=true");
                 }, 1500);
                 return;
               }

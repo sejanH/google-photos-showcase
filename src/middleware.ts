@@ -8,6 +8,7 @@ export default auth((req) => {
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   const isLoginPage = req.nextUrl.pathname === "/admin/login";
   const isApiAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
+  const forceReauth = req.nextUrl.searchParams.get("reauth") === "true";
 
   // Allow auth API routes to pass through
   if (isApiAuthRoute) return NextResponse.next();
@@ -22,7 +23,8 @@ export default auth((req) => {
   }
 
   // If logged in and on login page, redirect to admin dashboard
-  if (isLoginPage && req.auth) {
+  // UNLESS forceReauth is true (user needs to re-authenticate with Google)
+  if (isLoginPage && req.auth && !forceReauth) {
     return NextResponse.redirect(new URL("/admin", req.nextUrl.origin));
   }
 
