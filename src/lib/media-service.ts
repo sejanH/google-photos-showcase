@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import { batchGetMediaItems, getMediaItem } from "./google-picker";
+import { batchGetMediaItems } from "./google-picker";
 
 /**
  * Service to handle media item refreshing logic.
@@ -87,22 +87,9 @@ export async function refreshBaseUrls(photoIds?: string[]) {
         throw error;
       }
 
-      // Fallback: refresh one-by-one through Picker API when Photos Library scope
-      // has not yet been granted for existing refresh tokens.
-      await Promise.all(
-        googleIds.map(async (googleMediaId) => {
-          const item = await getMediaItem(access_token, googleMediaId);
-          const baseUrl = item.mediaFile?.baseUrl || item.baseUrl;
-          if (!baseUrl) return;
-          await prisma.photo.update({
-            where: { googleMediaId },
-            data: {
-              baseUrl,
-              baseUrlExpiresAt: expiryDate,
-            },
-          });
-          refreshedCount++;
-        })
+      throw new Error(
+        "Google Photos Library scope is missing for this account. " +
+        "Please re-authenticate to grant photoslibrary.readonly, then retry refresh."
       );
     }
   }

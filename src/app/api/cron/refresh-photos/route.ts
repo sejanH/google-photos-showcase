@@ -23,8 +23,27 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Cron refresh failed:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const needsReauth =
+      message.includes("scope is missing") ||
+      message.includes("re-authenticate") ||
+      message.includes("invalid_grant") ||
+      message.includes("revoked");
+
+    if (needsReauth) {
+      return NextResponse.json(
+        {
+          error: "Session expired",
+          requiresReauth: true,
+          message: "Google authorization needs to be refreshed. Please sign in again.",
+          details: message,
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Refresh failed", details: error instanceof Error ? error.message : "Unknown error" },
+      { error: "Refresh failed", details: message },
       { status: 500 }
     );
   }
